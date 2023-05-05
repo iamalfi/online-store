@@ -108,111 +108,29 @@ const createOrder = async (req, res) => {
         return res.status(500).send({ status: false, message: err.message });
     }
 };
-//___________________________________________Order Updation_______________________________________________________________
-const updateOrder = async function (req, res) {
-    try {
-        const userId = req.params.userId;
-        if (!isValidObjectId(userId))
-            return res
-                .status(400)
-                .send({ status: false, message: "invalid userId" });
-        const data = req.body;
-        let { orderId, status, ...a } = data;
-
-        if (Object.keys(data).length == 0)
-            return res.status(400).send({
-                status: false,
-                message: "Please enter valid request Body",
-            });
-        if (Object.keys(a).length != 0)
-            return res.status(400).send({
-                status: false,
-                message: "only cartId and cancellable is required",
-            });
-
-        // Authorization
-        if (userId != req.decodedToken)
-            return res.status(403).send({
-                status: false,
-                message: "you are not authrised for this action",
-            });
-        // Authorization
-
-        if (!isValidString(orderId))
-            return res
-                .status(400)
-                .send({ status: false, message: "Please provide orderId" });
-        if (!isValidObjectId(orderId))
-            return res.status(400).send({
-                status: false,
-                message: "Please provide valid orderId.",
-            });
-
-        if (!isValidString(status))
-            return res
-                .status(400)
-                .send({ status: false, message: "Status required" });
-
-        status = status.toLowerCase();
-        if (!["completed", "cancelled"].includes(status)) {
-            return res.status(400).send({
-                status: false,
-                message: "Status should be only completed or cancelled",
-            });
-        }
-
-        const userExist = await userModel.findOne({ _id: userId });
-        if (!userExist)
-            return res
-                .status(400)
-                .send({ status: false, message: "user does not exist" });
-
-        const cartId = await cartModel.findOne({ userId: userId });
-        if (!cartId)
-            return res
-                .status(404)
-                .send({ status: false, message: "Cart does not exist" });
-
-        const userOrder = await orderModel.findOne({
-            _id: orderId,
-            userId: userId,
-        });
-        if (!userOrder)
-            return res
-                .status(404)
-                .send({ status: false, message: "Order does not exist" });
-
-        if (
-            userOrder.status == "completed" ||
-            userOrder.status == "cancelled"
-        ) {
-            return res.status(200).send({
-                status: false,
-                message: "The status is already updated.",
-            });
-        }
-
-        if (status == "cancelled") {
-            if (userOrder.cancellable == false)
-                return res.status(400).send({
-                    status: false,
-                    message:
-                        "This order can't be cancelled because it is not allowed",
-                });
-        }
-
-        const updateOrder = await orderModel.findOneAndUpdate(
-            { _id: orderId, userId: userId },
-            { status },
-            { new: true }
-        );
-
-        return res
-            .status(200)
-            .send({ status: true, message: "Successfully", data: updateOrder });
-    } catch (error) {
-        res.status(500).send({ status: false, Message: error.message });
+// --------- retreive orders----------------
+const ordersList = async (req, res) => {
+    const orders = await orderModel.find();
+    if (orders.length == 0 || !orders) {
+        return res.status(404).json({ message: "No order found" });
     }
+    return res
+        .status(200)
+        .json({ message: "orders data fetched Successfully!", Orders: orders });
 };
 
-module.exports = { createOrder, updateOrder };
+const orderById = async (req, res) => {
+    const orderId = req.params.orderId;
+    const orders = await orderModel.findById(orderId);
+    if (orders.length == 0 || !orders) {
+        return res.status(404).json({ message: "No order found" });
+    }
+    return res
+        .status(200)
+        .json({
+            message: "order details fetched Successfullly!",
+            Orders: orders,
+        });
+};
+
+module.exports = { createOrder, ordersList, orderById };

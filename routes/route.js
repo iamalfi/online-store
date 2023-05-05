@@ -19,8 +19,11 @@ const {
     deleteProduct,
 } = require("../controllers/productController");
 const { Authentication } = require("../middlewares/middleware");
-const { createOrder, updateOrder } = require("../controllers/orderController");
-
+const {
+    createOrder,
+    ordersList,
+    orderById,
+} = require("../controllers/orderController");
 //........................USER API's.............................................
 router.post("/register", createUser);
 router.post("/login", userLogin);
@@ -42,7 +45,8 @@ router.delete("/users/:userId/cart", Authentication, deleteCart);
 
 //......................................ORDER API's...............................
 router.post("/users/:userId/orders", Authentication, createOrder);
-router.put("/users/:userId/orders", Authentication, updateOrder);
+router.get("/users/:userId/orderslist", Authentication, ordersList);
+router.get("/users/:userId/orders/:orderId", Authentication, orderById);
 
 router.all("/*", (req, res) =>
     res.status(400).send({ status: false, message: "invalid request" })
