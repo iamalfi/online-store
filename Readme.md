@@ -356,7 +356,8 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 -   Get product(s) details in response body.
 -   **Response format**
     -   _**On success**_ - Return HTTP status 200. Return the cart document. The response should be a JSON object like [this](#successful-response-structure)
-    -   _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
+    -   _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this]
+        (#error-response-structure)
 
 ### DELETE /users/:userId/cart
 
@@ -406,16 +407,23 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
     -   _**On success**_ - Return HTTP status 200. Also return the order document. The response should be a JSON object like [this](#successful-response-structure)
     -   _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
-## PUT /users/:userId/orders
+### GET /users/:userId/order
 
--   Updates an order status
+-   Returns order summary of the user.
+-   Make sure that order exist.
 -   Make sure the userId in params and in JWT token match.
 -   Make sure the user exist
--   Get order id in request body
--   Make sure the order belongs to the user
--   Make sure that only a cancellable order could be canceled. Else send an appropriate error message and response.
+-   Get product(s) details in response body.
 -   **Response format**
-    -   _**On success**_ - Return HTTP status 200. Also return the updated order document. The response should be a JSON object like [this](#successful-response-structure)
+
+    -   _**On success**_ - Return HTTP status 200. Return the cart document. The response should be a JSON object like [this](#successful-response-structure)
+    -   _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
+
+    ### GET/users/:userId/orders/:orderId
+
+-   Deletes a product by product id if it's not already deleted
+-   **Response format**
+    -   _**On success**_ - Return HTTP status 200. The response should be a JSON object like [this](#successful-response-structure)
     -   _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
 ## Testing

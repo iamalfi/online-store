@@ -110,7 +110,8 @@ const createOrder = async (req, res) => {
 };
 // --------- retreive orders----------------
 const ordersList = async (req, res) => {
-    const orders = await orderModel.find();
+    const userId = req.params.userId;
+    const orders = await orderModel.find({ userId: userId });
     if (orders.length == 0 || !orders) {
         return res.status(404).json({ message: "No order found" });
     }
@@ -121,16 +122,18 @@ const ordersList = async (req, res) => {
 
 const orderById = async (req, res) => {
     const orderId = req.params.orderId;
-    const orders = await orderModel.findById(orderId);
-    if (orders.length == 0 || !orders) {
+    const userId = req.params.userId;
+    const orders = await orderModel.findOne({
+        orderId: orderId,
+        userId: userId,
+    });
+    if (!orders) {
         return res.status(404).json({ message: "No order found" });
     }
-    return res
-        .status(200)
-        .json({
-            message: "order details fetched Successfullly!",
-            Orders: orders,
-        });
+    return res.status(200).json({
+        message: "order details fetched Successfullly!",
+        Orders: orders,
+    });
 };
 
 module.exports = { createOrder, ordersList, orderById };
